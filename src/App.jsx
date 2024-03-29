@@ -1,5 +1,5 @@
 import { ContactForm, ContactList, SearchBox } from './components/index.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const contactsData = [
   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
@@ -9,8 +9,18 @@ const contactsData = [
 ];
 
 const App = () => {
-  const [contact, setContact] = useState(contactsData);
+  const [contact, setContact] = useState(() => {
+    const savedObject = window.localStorage.getItem('contacts');
+    if (savedObject !== null) {
+      return JSON.parse(savedObject);
+    }
+    return contactsData;
+  });
   const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    window.localStorage.setItem('contacts', JSON.stringify(contact));
+  }, [contact]);
 
   const filteredValues = contact.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
